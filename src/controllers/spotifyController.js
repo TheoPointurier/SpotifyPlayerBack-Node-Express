@@ -168,7 +168,7 @@ export async function proxySpotifyRequest(req, res) {
     res.json(data);
   } catch (error) {
     console.error('Erreur dans proxySpotifyRequest:', error .message);
-    if(response.status == 403 && errorText.includes('the user may not be registered') ) {
+    if(error.status == 403 && errorText.includes('the user may not be registered') ) {
       console.log('user not registered');
       res.status(403).text('the user may not be registered');
       return;
