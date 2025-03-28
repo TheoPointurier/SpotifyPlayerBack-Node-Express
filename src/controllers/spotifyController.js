@@ -163,17 +163,16 @@ export async function proxySpotifyRequest(req, res) {
       return;
     }
 
-    if(response.status == 403 && errorText.includes('the user may not be registered') ) {
-      console.log('user not registered');
-      res.status(403).send('the user may not be registered');
-      return;
-    }
-
     // Parser la réponse en JSON uniquement si elle contient un corps
     const data = await response.json();
     res.json(data);
   } catch (error) {
     console.error('Erreur dans proxySpotifyRequest:', error .message);
+    if(response.status == 403 && errorText.includes('the user may not be registered') ) {
+      console.log('user not registered');
+      res.status(403).send('the user may not be registered');
+      return;
+    }
     res.status(500).json({ error: 'Erreur lors de la requête Spotify', details: error.message });
     return;
   }
