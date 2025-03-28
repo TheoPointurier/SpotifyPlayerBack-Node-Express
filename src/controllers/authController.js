@@ -1,4 +1,4 @@
-export function login( req, res ) {
+export function login(req, res) {
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
   if (req.session?.accessToken) {
     return res.redirect(FRONTEND_URL);
@@ -9,7 +9,7 @@ export function login( req, res ) {
   res.redirect(authUrl);
 };
 
-export async function callback( req, res ) {
+export async function callback(req, res) {
   const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
   const code = req.query.code;
   try {
@@ -108,7 +108,7 @@ export async function getToken(req, res) {
   res.json({ access_token: accessToken || '' });
 };
 
-export async function refresh( req, res ) {
+export async function refresh(req, res) {
   const refreshToken = req.session?.refreshToken || req.body.refresh_token;
   if (!refreshToken) {
     res.status(400).json({ error: 'Refresh token manquant' });
@@ -149,7 +149,7 @@ export async function refresh( req, res ) {
   }
 };
 
-export function logout ( req, res ) {
+export function logout(req, res) {
   res.cookie('access_token', '', { expires: new Date(0) });
   req.session?.destroy((err) => {
     if (err) {
@@ -160,3 +160,60 @@ export function logout ( req, res ) {
     res.json({ message: 'Déconnecté' });
   });
 };
+
+export async function getClientCredentialsToken() {
+  // Construction du header d’autorisation “Basic <base64(client_id:client_secret)>”
+  const authHeader = Buffer
+    .from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`)
+    .toString('base64');
+
+  // Appel à l’endpoint OAuth “Client Credentials”
+  const response = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${authHeader}`,
+    },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+    })
+  });
+
+  if (!response.ok) {
+    const errMsg = await response.text();
+    throw new Error(`Impossible d'obtenir le token (status ${response.status}) : ${errMsg}`);
+  }
+
+  const data = await response.json();  // { access_token, token_type, expires_in, ... }
+  return data.access_token;            // on ne récupère que access_token
+}
+
+export async function getTheOnePlaylist(req, res) {
+  try {
+    const { playlistId } = req.params;
+    const accessToken = await getClientCredentialsToken();
+    if (!accessToken) {
+      res.status(401).json({ error: 'problème lors de la récupération du token pub' });
+      return;
+    }
+
+    const spotifyResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    if (!spotifyResponse.ok) {
+      const errText = await spotifyResponse.text();
+      return res.status(spotifyResponse.status).json({
+        error: 'Erreur lors de la récupération de la playlist Spotify',
+        details: errText,
+      });
+    }
+
+    const playlistData = await spotifyResponse.json();
+    return res.json(playlistData);
+  } catch (error) {
+    console.error('erreur public playlist', error);
+    res.status(500).json({ error: 'Erreur interne' });
+  }
+}
