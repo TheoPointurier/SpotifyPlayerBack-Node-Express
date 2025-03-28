@@ -18,9 +18,19 @@
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "express-session": "^1.18.1"
+    "express-session": "^1.18.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "sqlite3",
+      "sqlite3"
+    ],
+    "onlyBuiltDependencies": [
+      "sqlite3"
+    ]
   }
 }
