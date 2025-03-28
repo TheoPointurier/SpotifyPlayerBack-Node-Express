@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "startprod": "pm2 start index.js --name spotify-back",
+    "stopprod": "pm2 stop index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +24,8 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+    "pm2": "^6.0.5"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
