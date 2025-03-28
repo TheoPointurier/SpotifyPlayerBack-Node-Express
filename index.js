@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
 import authRouter from './src/routes/authRoutes.js';
@@ -8,7 +10,7 @@ import spotifyRouter from './src/routes/spotifyRoutes.js';
 import sqlite3 from 'sqlite3';
 import connectSqlite3 from 'connect-sqlite3';
 
-dotenv.config();
+const app = express();
 
 const result = dotenv.config();
 console.log('dotenv result:', result);
@@ -25,11 +27,10 @@ const db = new sqlite3.Database('./session.db', (err) => {
   }
 });
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://theopointurier.com'],
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173','http://localhost:4173','http://127.0.0.1:4173', 'https://theopointurier.com'],
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -55,7 +56,7 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'Lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   }),

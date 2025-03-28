@@ -1,6 +1,5 @@
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-
 export function login( req, res ) {
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
   if (req.session?.accessToken) {
     return res.redirect(FRONTEND_URL);
   }
@@ -11,6 +10,7 @@ export function login( req, res ) {
 };
 
 export async function callback( req, res ) {
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
   const code = req.query.code;
   try {
     const response = await fetch('https://accounts.spotify.com/api/token', {
