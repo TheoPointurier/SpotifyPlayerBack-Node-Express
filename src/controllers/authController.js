@@ -184,8 +184,9 @@ export async function getClientCredentialsToken() {
     throw new Error(`Impossible d'obtenir le token (status ${response.status}) : ${errMsg}`);
   }
 
-  const data = await response.json();  // { access_token, token_type, expires_in, ... }
-  return data.access_token;            // on ne récupère que access_token
+  const data = await response.json();  
+  consop.log('data', data);
+  return data.access_token;           
 }
 
 export async function getTheOnePlaylist(req, res) {
