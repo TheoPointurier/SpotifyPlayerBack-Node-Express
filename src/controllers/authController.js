@@ -4,7 +4,7 @@ export function login(req, res) {
     return res.redirect(FRONTEND_URL);
   }
 
-  const scope = ['streaming user-read-private', 'user-read-email', 'user-read-playback-state', 'user-modify-playback-state'].join(' ');
+  const scope = ['user-library-read','streaming user-read-private', 'user-read-email', 'user-read-playback-state', 'user-modify-playback-state'].join(' ');
   const authUrl = `https://accounts.spotify.com/authorize?client_id=${process.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}&scope=${encodeURIComponent(scope)}`;
   res.redirect(authUrl);
 };
